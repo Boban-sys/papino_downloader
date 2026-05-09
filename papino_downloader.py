@@ -1,6 +1,6 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║           Papino Downloader — yt-dlp + CustomTkinter  ║
+║           Papino Downloader — yt-dlp + CustomTkinter         ║
 ║                         v1.1.0                               ║
 ╚══════════════════════════════════════════════════════════════╝
 
@@ -176,6 +176,7 @@ class PapinoDownloader(ctk.CTk):
         self._download_thread: threading.Thread | None = None
 
         self._build_ui()
+        self._load_icon()
 
         # Mostra banner di avviso se FFmpeg non è installato.
         # Chiamato DOPO _build_ui() perché usa il log box.
@@ -413,6 +414,30 @@ class PapinoDownloader(ctk.CTk):
         )
         if folder:
             self.dest_var.set(folder)
+
+    def _load_icon(self):
+        """
+        Carica l'icona dell'applicazione dalla cartella dello script.
+
+        Cerca il file  yt_downloader_icon.ico  nella stessa directory
+        di yt_downloader.py.  Se trovato, lo imposta come icona della
+        finestra (barra del titolo + taskbar + collegamento desktop).
+
+        self.iconbitmap() è il metodo tkinter per le icone .ico su Windows.
+        Su macOS e Linux viene silenziosamente ignorato (non supportato
+        nello stesso modo), quindi il try/except garantisce portabilità.
+
+        __file__ è il percorso del file Python corrente; os.path.dirname
+        ne estrae la cartella, così l'icona viene cercata sempre accanto
+        all'applicazione indipendentemente dalla working directory.
+        """
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "yt_downloader_icon.ico")
+        if os.path.isfile(icon_path):
+            try:
+                self.iconbitmap(icon_path)
+            except Exception:
+                pass   # su macOS/Linux iconbitmap non è supportato: ignora
 
     def _show_ffmpeg_warning(self):
         """
